@@ -1,0 +1,6 @@
+@Wachhund_HostAddress = http://localhost:5163
+
+GET {{Wachhund_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
