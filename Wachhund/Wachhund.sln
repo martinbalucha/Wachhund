@@ -5,6 +5,14 @@ VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wachhund", "Wachhund\Wachhund.csproj", "{D9EDF0C0-58A8-4594-950E-33DBCC30D416}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wachhund.Contracts", "Wachhund.Contracts\Wachhund.Contracts.csproj", "{6A9C4F76-FBE1-47C6-BB59-08014F2A4200}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wachhund.Domain", "Wachhund.Domain\Wachhund.Domain.csproj", "{132052F9-29F9-43C7-A50C-2DAB6ECB1590}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wachhund.Infrastructure.FakeSource", "Wachhund.Infrastructure.FakeSource\Wachhund.Infrastructure.FakeSource.csproj", "{D8295CEE-3294-4787-8C1F-9D37BA86C676}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wachhund.Test", "Wachhund.Test\Wachhund.Test.csproj", "{6BB0B8EF-4A06-4262-97C9-2D3880005884}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +23,22 @@ Global
 		{D9EDF0C0-58A8-4594-950E-33DBCC30D416}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9EDF0C0-58A8-4594-950E-33DBCC30D416}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9EDF0C0-58A8-4594-950E-33DBCC30D416}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A9C4F76-FBE1-47C6-BB59-08014F2A4200}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A9C4F76-FBE1-47C6-BB59-08014F2A4200}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A9C4F76-FBE1-47C6-BB59-08014F2A4200}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A9C4F76-FBE1-47C6-BB59-08014F2A4200}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132052F9-29F9-43C7-A50C-2DAB6ECB1590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132052F9-29F9-43C7-A50C-2DAB6ECB1590}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132052F9-29F9-43C7-A50C-2DAB6ECB1590}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132052F9-29F9-43C7-A50C-2DAB6ECB1590}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8295CEE-3294-4787-8C1F-9D37BA86C676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8295CEE-3294-4787-8C1F-9D37BA86C676}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8295CEE-3294-4787-8C1F-9D37BA86C676}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8295CEE-3294-4787-8C1F-9D37BA86C676}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BB0B8EF-4A06-4262-97C9-2D3880005884}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BB0B8EF-4A06-4262-97C9-2D3880005884}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BB0B8EF-4A06-4262-97C9-2D3880005884}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BB0B8EF-4A06-4262-97C9-2D3880005884}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
