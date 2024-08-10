@@ -9,16 +9,22 @@ namespace Wachhund.Application.Server.Services;
 public class MonitoringService : BackgroundService
 {
     private readonly IEnumerable<IMonitor> monitors;
+    private readonly ILogger<MonitoringService> logger;
 
-    public MonitoringService(IEnumerable<IMonitor> monitors)
+    public MonitoringService(IEnumerable<IMonitor> monitors, ILogger<MonitoringService> logger)
     {
         this.monitors = monitors;
+        this.logger = logger;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        logger.LogInformation("Starting the monitoring process.");
+
         var tasks = monitors.Select(m => m.StartAsync(stoppingToken));
 
-        return Task.WhenAll(tasks);
+        await Task.WhenAll(tasks);
+
+        logger.LogInformation("Monitoring process ended.");
     }
 }
