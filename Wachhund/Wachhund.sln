@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wachhund", "Wachhund\Wachhund.csproj", "{D9EDF0C0-58A8-4594-950E-33DBCC30D416}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wachhund.Application.Server", "Wachhund.Application.Server\Wachhund.Application.Server.csproj", "{D9EDF0C0-58A8-4594-950E-33DBCC30D416}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wachhund.Contracts", "Wachhund.Contracts\Wachhund.Contracts.csproj", "{6A9C4F76-FBE1-47C6-BB59-08014F2A4200}"
 EndProject
