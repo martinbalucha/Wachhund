@@ -13,11 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wachhund.Infrastructure.Fak
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wachhund.Test", "Wachhund.Test\Wachhund.Test.csproj", "{6BB0B8EF-4A06-4262-97C9-2D3880005884}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44E8389B-4C1F-4997-AC1A-6959434AB8EA}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\WatchDogs\src\WatchDogs.Application\.editorconfig = ..\..\WatchDogs\src\WatchDogs.Application\.editorconfig
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -11,4 +11,12 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="E:\Projekty\Wachhund\src\Wachhund.Application.Server\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="E:\Projekty\Wachhund\src\Wachhund.Application.Server\.editorconfig" />
+  </ItemGroup>
+
 </Project>
