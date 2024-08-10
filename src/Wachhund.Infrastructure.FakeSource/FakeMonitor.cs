@@ -1,16 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using Wachhund.Contracts.TradeDetection;
+using Wachhund.Contracts.TradeDetection.Persistence;
 
 namespace Wachhund.Infrastructure.FakeSource;
 
 public class FakeMonitor : IMonitor
 {
-    public Task StartAsync(CancellationToken cancellationToken = default)
+    private readonly IFakeDataSource _fakeDataSource;
+    private readonly ITradeDealCache _cache;
+    private readonly ILogger<FakeMonitor> _logger;
+
+    public FakeMonitor(IFakeDataSource fakeDataSource,
+        ITradeDealCache cache,
+        ILogger<FakeMonitor> logger)
     {
-        throw new NotImplementedException();
+        _fakeDataSource = fakeDataSource;
+        _cache = cache;
+        _logger = logger;
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Starting monitoring process for fake data source.");
+
+        await foreach (var tradeDeal in _fakeDataSource.FetchDataAsync(cancellationToken))
+        {
+            await _cache.StoreAsync(tradeDeal);
+        }
     }
 }

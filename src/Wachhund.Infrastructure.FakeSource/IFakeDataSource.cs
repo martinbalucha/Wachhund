@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Wachhund.Contracts.TradeDetection;
 
 namespace Wachhund.Infrastructure.FakeSource;
 
@@ -11,4 +7,10 @@ namespace Wachhund.Infrastructure.FakeSource;
 /// </summary>
 public interface IFakeDataSource
 {
+    /// <summary>
+    /// Asynchronnously fetches fake trade deals.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Asynchronnous collection on fake trade deals.</returns>
+    IAsyncEnumerable<TradeDeal> FetchDataAsync(CancellationToken cancellationToken);
 }

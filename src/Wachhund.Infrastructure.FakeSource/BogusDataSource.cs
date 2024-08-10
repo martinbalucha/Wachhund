@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Wachhund.Contracts.TradeDetection;
 
 namespace Wachhund.Infrastructure.FakeSource;
 
-
+/// <summary>
+/// Implementation of <see cref="IFakeDataSource"/> using Bogus NuGet
+/// </summary>
 public class BogusDataSource : IFakeDataSource
 {
+    public IAsyncEnumerable<TradeDeal> FetchDataAsync(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }
