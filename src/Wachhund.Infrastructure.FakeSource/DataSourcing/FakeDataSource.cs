@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
 
-namespace Wachhund.Infrastructure.FakeSource;
+namespace Wachhund.Infrastructure.FakeSource.DataSourcing;
 
 public class FakeDataSource : IFakeDataSource
 {
@@ -22,7 +22,7 @@ public class FakeDataSource : IFakeDataSource
         throw new NotImplementedException();
     }
 
-    
+
 
 
 }

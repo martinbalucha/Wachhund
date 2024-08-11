@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Contracts.TradeDetection.Persistence;
+using Wachhund.Infrastructure.FakeSource.DataSourcing;
 using Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
 
 namespace Wachhund.Infrastructure.FakeSource;
@@ -26,6 +27,8 @@ public class FakeMonitor : IMonitor
 
         await foreach (var tradeDeal in _fakeDataSource.FetchDataAsync(cancellationToken))
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             await _cache.StoreAsync(tradeDeal);
         }
     }

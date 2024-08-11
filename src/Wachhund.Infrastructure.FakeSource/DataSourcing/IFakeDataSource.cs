@@ -1,6 +1,6 @@
 ﻿using Wachhund.Contracts.TradeDetection;
 
-namespace Wachhund.Infrastructure.FakeSource;
+namespace Wachhund.Infrastructure.FakeSource.DataSourcing;
 
 /// <summary>
 /// Represents fake source for trade deals.
