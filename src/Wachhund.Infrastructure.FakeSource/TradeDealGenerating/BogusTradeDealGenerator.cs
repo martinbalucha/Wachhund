@@ -2,26 +2,34 @@
 using Microsoft.Extensions.Options;
 using Wachhund.Contracts.TradeDetection;
 
-namespace Wachhund.Infrastructure.FakeSource;
+namespace Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
 
 /// <summary>
-/// Implementation of <see cref="IFakeDataSource"/> using Bogus NuGet
+/// Implementation of <see cref="IFakeTradeDealGenerator"/> using Bogus NuGet
 /// </summary>
-public class BogusDataSource
+public class BogusTradeDealGenerator : IFakeTradeDealGenerator
 {
+    private const decimal MinimumAccountBalance = 1;
+    private const decimal MaximumAccountBalance = 10000000;
+
     private readonly Faker<TradeDeal> _tradeDealFaker = new();
     private readonly Random random = new Random();
     private readonly FakeDataSourceConfiguration _fakeDataConfiguration;
 
-    public BogusDataSource(IOptions<FakeDataSourceConfiguration> fakeDataConfiguration)
+    public BogusTradeDealGenerator(IOptions<FakeDataSourceConfiguration> fakeDataConfiguration)
     {
         _fakeDataConfiguration = fakeDataConfiguration.Value;
 
         _tradeDealFaker.RuleFor(t => t.Id, f => Guid.NewGuid())
             .RuleFor(t => t.Activity, f => f.PickRandom<TradeActivity>())
-            .RuleFor(t => t.CurrencyPair, f => GenerateRandomCurrency())
-            //.RuleFor(t => t.Balance, f => )4
-            ;
+            .RuleFor(t => t.CurrencyPair, f => GenerateRandomCurrencyPair())
+            .RuleFor(t => t.Balance, f => f.Finance.Random.Decimal(MinimumAccountBalance, MaximumAccountBalance))
+            .RuleFor(t => t.Lot, f => f.Finance.Random.Decimal(0.1m, 100000m));
+    }
+
+    public IEnumerable<TradeDeal> Generate(int count)
+    {
+        return _tradeDealFaker.Generate(count);
     }
 
     private string GenerateRandomCurrencyPair()
