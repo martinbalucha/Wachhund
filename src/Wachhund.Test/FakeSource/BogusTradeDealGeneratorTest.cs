@@ -4,7 +4,7 @@ using Wachhund.Contracts.TradeDetection;
 using Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
 using Xunit;
 
-namespace Wachhund.Test.FakeDataSource;
+namespace Wachhund.Test.FakeSource;
 
 public class BogusTradeDealGeneratorTest
 {
