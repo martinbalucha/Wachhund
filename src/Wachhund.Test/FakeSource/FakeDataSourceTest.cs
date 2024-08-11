@@ -62,6 +62,7 @@ public class FakeDataSourceTest
             if (stopwatch.ElapsedMilliseconds > secondsToRun * 1000)
             {
                 stopwatch.Stop();
+                cancellationTokenSource.Cancel();
                 break;
             }
 
