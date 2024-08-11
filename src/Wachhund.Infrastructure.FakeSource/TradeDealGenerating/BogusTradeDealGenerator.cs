@@ -14,9 +14,9 @@ public class BogusTradeDealGenerator : IFakeTradeDealGenerator
 
     private readonly Faker<TradeDeal> _tradeDealFaker = new();
     private readonly Random random = new Random();
-    private readonly FakeDataSourceConfiguration _fakeDataConfiguration;
+    private readonly FakeDataSourceGeneratingConfiguration _fakeDataConfiguration;
 
-    public BogusTradeDealGenerator(IOptions<FakeDataSourceConfiguration> fakeDataConfiguration)
+    public BogusTradeDealGenerator(IOptions<FakeDataSourceGeneratingConfiguration> fakeDataConfiguration)
     {
         _fakeDataConfiguration = fakeDataConfiguration.Value;
 

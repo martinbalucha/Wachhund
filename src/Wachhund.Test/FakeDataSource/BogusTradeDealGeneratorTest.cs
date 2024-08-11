@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Moq;
 using Wachhund.Contracts.TradeDetection;
-using Wachhund.Infrastructure.FakeSource;
 using Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
 using Xunit;
 
@@ -9,17 +8,17 @@ namespace Wachhund.Test.FakeDataSource;
 
 public class BogusTradeDealGeneratorTest
 {
-    private readonly FakeDataSourceConfiguration _configuration;
+    private readonly FakeDataSourceGeneratingConfiguration _configuration;
     private readonly BogusTradeDealGenerator _generator;
 
     public BogusTradeDealGeneratorTest()
     {
-        _configuration = new FakeDataSourceConfiguration
+        _configuration = new FakeDataSourceGeneratingConfiguration
         {
             AllowedCurrenciesIso4217 = [ "EUR", "USD", "CHF" ]
         };
 
-        var optionsMock = new Mock<IOptions<FakeDataSourceConfiguration>>();
+        var optionsMock = new Mock<IOptions<FakeDataSourceGeneratingConfiguration>>();
         optionsMock.SetupGet(x => x.Value).Returns(_configuration);
 
         _generator = new BogusTradeDealGenerator(optionsMock.Object);

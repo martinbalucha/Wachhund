@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Contracts.TradeDetection.Persistence;
+using Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
 
 namespace Wachhund.Infrastructure.FakeSource;
 
