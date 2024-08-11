@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Wachhund.Contracts\Wachhund.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
