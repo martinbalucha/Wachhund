@@ -1,5 +1,8 @@
 using Serilog;
 using Wachhund.Application.Server.Services;
+using Wachhund.Infrastructure.FakeSource;
+using Wachhund.Infrastructure.FakeSource.DataSourcing;
+using Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
 
 namespace Wachhund;
 
@@ -20,8 +23,26 @@ public class Program
 
         builder.Services.AddSerilog(ctx => ctx.ReadFrom.Configuration(builder.Configuration));
 
+        // Fake source
+        builder.Services.Configure<FakeDataSourceConfiguration>(builder.Configuration
+            .GetRequiredSection(nameof(FakeDataSourceConfiguration)));
+
+        builder.Services.Configure<FakeDataSourceGeneratingConfiguration>(builder.Configuration
+            .GetRequiredSection(nameof(FakeDataSourceGeneratingConfiguration)));
+
+        builder.Services.AddSingleton<IFakeDataSource, FakeDataSource>();
+        builder.Services.AddSingleton<IFakeTradeDealGenerator, BogusTradeDealGenerator>();
+        builder.Services.AddSingleton<FakeMonitor>();
+
         // Monitoring process
-        builder.Services.AddHostedService<MonitoringService>();
+        builder.Services.AddHostedService<MonitoringService>(services =>
+        {
+            var monitors = services.GetRequiredService<FakeMonitor>();
+
+            var logger = services.GetRequiredService<ILogger<MonitoringService>>();
+
+            return new MonitoringService(new[] { monitors }, logger);
+        });
 
         var app = builder.Build();
 
