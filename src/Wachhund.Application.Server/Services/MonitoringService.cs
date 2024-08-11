@@ -1,5 +1,4 @@
-﻿
-using Wachhund.Contracts.TradeDetection;
+﻿using Wachhund.Contracts.TradeDetection;
 
 namespace Wachhund.Application.Server.Services;
 
@@ -21,7 +20,7 @@ public class MonitoringService : BackgroundService
     {
         logger.LogInformation("Starting the monitoring process.");
 
-        var tasks = monitors.Select(m => m.StartAsync(stoppingToken));
+        var tasks = monitors.Select(m => Task.Run(() => m.StartAsync(stoppingToken)));
 
         await Task.WhenAll(tasks);
 
