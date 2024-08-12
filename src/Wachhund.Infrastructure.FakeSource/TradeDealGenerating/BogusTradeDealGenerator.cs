@@ -27,6 +27,11 @@ public class BogusTradeDealGenerator : IFakeTradeDealGenerator
             .RuleFor(t => t.Lot, f => f.Finance.Random.Decimal(0.1m, 100000m, 2));
     }
 
+    public TradeDeal Generate()
+    {
+        return _tradeDealFaker.Generate();
+    }
+
     public IEnumerable<TradeDeal> Generate(int count)
     {
         return _tradeDealFaker.Generate(count);

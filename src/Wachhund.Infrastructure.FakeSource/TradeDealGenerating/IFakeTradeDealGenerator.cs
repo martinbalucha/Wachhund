@@ -5,6 +5,12 @@ namespace Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
 public interface IFakeTradeDealGenerator
 {
     /// <summary>
+    /// Generates a single fake trade deal.
+    /// </summary>
+    /// <returns></returns>
+    TradeDeal Generate();
+
+    /// <summary>
     /// Generates a given number of fake trade deals.
     /// </summary>
     /// <param name="count">Desired number of fake trade deals.</param>
