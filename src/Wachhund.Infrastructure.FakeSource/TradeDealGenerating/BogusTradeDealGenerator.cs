@@ -21,7 +21,9 @@ public class BogusTradeDealGenerator : IFakeTradeDealGenerator
         _fakeDataConfiguration = fakeDataConfiguration.Value;
 
         _tradeDealFaker.RuleFor(t => t.Id, f => Guid.NewGuid())
+            .RuleFor(t => t.SourceId, _fakeDataConfiguration.FakeDataSourceId)
             .RuleFor(t => t.Activity, f => f.PickRandom(new List<TradeActivity> { TradeActivity.Buy, TradeActivity.Sell }))
+            .RuleFor(t => t.OccurredAt, f => DateTimeOffset.Now)
             .RuleFor(t => t.CurrencyPair, f => GenerateRandomCurrencyPair())
             .RuleFor(t => t.Balance, f => f.Finance.Random.Decimal(MinimumAccountBalance, MaximumAccountBalance, 2))
             .RuleFor(t => t.Lot, f => f.Finance.Random.Decimal(0.1m, 100000m, 2));

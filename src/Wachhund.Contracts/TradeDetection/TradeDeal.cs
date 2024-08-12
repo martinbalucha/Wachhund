@@ -11,21 +11,30 @@
 public record TradeDeal
 {
     public Guid Id { get; init; }
+    public string SourceId { get; init; }
     public decimal Balance { get; init; }
     public string CurrencyPair { get; init; }
     public decimal Lot {  get; init; }
     public TradeActivity Activity { get; init; }
+    public DateTimeOffset OccurredAt { get; init; }
 
     public TradeDeal()
     {
     }
 
-    public TradeDeal(Guid Id, Guid SourceId, decimal Balance, string CurrencyPair, decimal Lot, TradeActivity Activity)
+    public TradeDeal(Guid Id,
+        string SourceId,
+        decimal Balance,
+        string CurrencyPair,
+        decimal Lot,
+        TradeActivity Activity,
+        DateTimeOffset OccurredAt)
     {
         this.Id = Id;
         this.Balance = Balance;
         this.CurrencyPair = CurrencyPair;
         this.Lot = Lot;
         this.Activity = Activity;
+        this.OccurredAt = OccurredAt;
     }
 }
