@@ -43,7 +43,7 @@ public class FakeDataSourceTest
     [InlineData(3)]
     [InlineData(5)]
     [InlineData(10)]
-    public async Task FetchDataAsync_IncomingData(int secondsToRun)
+    public async Task FetchDataAsync_IncomingData_NumberOfDealsInCorrectRange(int secondsToRun)
     {
         // Arrange
         int dealsRecorded = 0;
