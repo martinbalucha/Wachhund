@@ -11,6 +11,9 @@ namespace Wachhund.Domain;
 
 public class InMemoryTradeDealCache : ITradeDealCache
 {
+    /// <summary>
+    /// An in-memory cache which separates the deals into "buckets" by the currency pair.
+    /// </summary>
     private readonly ConcurrentDictionary<string, ConcurrentBag<TradeDeal>> _cache = new();
 
     public Task CleanupCacheAsync(DateTimeOffset cutoffDate)
@@ -25,6 +28,10 @@ public class InMemoryTradeDealCache : ITradeDealCache
 
     public Task StoreAsync(TradeDeal tradeDeal)
     {
-        throw new NotImplementedException();
+        var dealsForCurrency = _cache.GetOrAdd(tradeDeal.CurrencyPair, (k) => new ());
+
+        dealsForCurrency.Add(tradeDeal);
+
+        return Task.CompletedTask;
     }
 }
