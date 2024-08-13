@@ -1,5 +1,7 @@
 using Serilog;
 using Wachhund.Application.Server.Services;
+using Wachhund.Contracts.TradeDetection.Persistence;
+using Wachhund.Domain;
 using Wachhund.Infrastructure.FakeSource;
 using Wachhund.Infrastructure.FakeSource.DataSourcing;
 using Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
@@ -33,6 +35,9 @@ public class Program
         builder.Services.AddSingleton<IFakeDataSource, FakeDataSource>();
         builder.Services.AddSingleton<IFakeTradeDealGenerator, BogusTradeDealGenerator>();
         builder.Services.AddSingleton<FakeMonitor>();
+
+        // Persistence
+        builder.Services.AddSingleton<ITradeDealCache, InMemoryTradeDealCache>();
 
         // Monitoring process
         builder.Services.AddHostedService<MonitoringService>(services =>
