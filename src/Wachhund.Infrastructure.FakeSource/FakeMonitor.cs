@@ -32,9 +32,9 @@ public class FakeMonitor : IMonitor
 
             await _cache.StoreAsync(tradeDeal);
             
-            if (cunter >= 100)
+            if (cunter == 100)
             {
-                var removalDate = DateTimeOffset.Now.AddSeconds(-5);
+                var removalDate = DateTimeOffset.Now.AddSeconds(-1);
                 await _cache.CleanupCacheAsync(removalDate);
             }
 

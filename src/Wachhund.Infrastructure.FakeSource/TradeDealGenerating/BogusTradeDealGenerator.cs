@@ -41,15 +41,15 @@ public class BogusTradeDealGenerator : IFakeTradeDealGenerator
 
     private string GenerateRandomCurrencyPair()
     {
-        string firstCurrency = GenerateRandomCurrency();
-        string secondCurrency = firstCurrency;
+        string baseCurrency = GenerateRandomCurrency();
+        string quoteCurrency = GenerateRandomCurrency();
 
-        while (firstCurrency == secondCurrency)
+        while (baseCurrency == quoteCurrency)
         {
-            secondCurrency = GenerateRandomCurrency();
+            quoteCurrency = GenerateRandomCurrency();
         }
 
-        return firstCurrency + secondCurrency;
+        return baseCurrency + quoteCurrency;
     }
 
     private string GenerateRandomCurrency()

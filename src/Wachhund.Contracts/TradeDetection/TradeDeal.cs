@@ -37,4 +37,9 @@ public record TradeDeal
         this.Activity = Activity;
         this.OccurredAt = OccurredAt;
     }
+
+    public override string ToString()
+    {
+        return $"{Id}-{SourceId}: Balance {Balance}, {Activity} {CurrencyPair}, {Lot} lot at {OccurredAt.ToString("O")}";
+    }
 }

@@ -13,6 +13,7 @@ public class InMemoryTradeDealCache : ITradeDealCache
     /// An in-memory cache which separates the deals into "buckets" by the currency pair.
     /// </summary>
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<TradeDeal, byte>> _cache = new();
+    private readonly ConcurrentDictionary<string, ReaderWriterLockSlim> _rwLocks = new();
 
     public InMemoryTradeDealCache(ILogger<InMemoryTradeDealCache> logger)
     {
@@ -21,39 +22,94 @@ public class InMemoryTradeDealCache : ITradeDealCache
 
     public Task CleanupCacheAsync(DateTimeOffset cutoffDate)
     {
-        Parallel.ForEach(_cache, bucket =>
+        try
         {
-            var oldDeals = bucket.Value.Where(kv => kv.Key.OccurredAt > cutoffDate);
-            
-            foreach (var oldDeal in oldDeals)
+            Parallel.ForEach(_cache, bucket =>
             {
-                if (!bucket.Value.TryRemove(oldDeal))
+                string currencyPair = bucket.Key;
+                _rwLocks.TryGetValue(currencyPair, out var rwLock);
+
+                rwLock?.EnterWriteLock();
+
+                try
                 {
-                    _logger.LogDebug("Could not remove deal with ID='{DealId}'", oldDeal.Key.Id);
+                    var oldDeals = bucket.Value.Where(kv => kv.Key.OccurredAt > cutoffDate).ToArray();
+
+                    foreach (var oldDeal in oldDeals)
+                    {
+                        if (!bucket.Value.TryRemove(oldDeal))
+                        {
+                            _logger.LogDebug("Could not remove deal with ID='{DealId}'", oldDeal.Key.Id);
+                        }
+
+                        _logger.LogInformation($"Removed {oldDeals.Length} for '{bucket.Key}'");
+                    }
                 }
-            }
-        });
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, "An error ocurred for cleanup of CurrencyPair='{CurrencyPair}' bucket", currencyPair);
+                    throw;
+                }
+                finally
+                {
+                    rwLock?.ExitWriteLock();
+                }
+            });
+        }
+        catch (AggregateException ex)
+        {
+            _logger.LogError(ex, "An error ocurred during the cleanup.");
+        }
 
         return Task.CompletedTask;
     }
 
     public Task<IEnumerable<TradeDeal>> GetDealsLaterThenAsync(string currencyPair, DateTimeOffset latestDealsDate)
     {
-        if (!_cache.TryGetValue(currencyPair, out var soughtDeals))
-        {
-            return Task.FromResult(Enumerable.Empty<TradeDeal>());
-        }
+        var rwLock = _rwLocks.GetOrAdd(currencyPair, k => new ReaderWriterLockSlim());
 
-        return Task.FromResult(soughtDeals.Select(kv => kv.Key)
-                                          .Where(d => d.OccurredAt <= latestDealsDate));
+        rwLock.EnterReadLock();
+
+        try
+        {
+            if (!_cache.TryGetValue(currencyPair, out var soughtDeals))
+            {
+                return Task.FromResult(Enumerable.Empty<TradeDeal>());
+            }
+
+            return Task.FromResult(soughtDeals.Select(kv => kv.Key)
+                                              .Where(d => d.OccurredAt <= latestDealsDate));
+        }
+        finally 
+        { 
+            rwLock.ExitReadLock();
+        }     
     }
 
     public Task StoreAsync(TradeDeal tradeDeal)
     {
-        var dealsForCurrency = _cache.GetOrAdd(tradeDeal.CurrencyPair, (k) => new ());
+        var rwLock = _rwLocks.GetOrAdd(tradeDeal.CurrencyPair, k => new ReaderWriterLockSlim());
 
-        dealsForCurrency.TryAdd(tradeDeal, default);
+        try
+        {
+            rwLock.EnterWriteLock();
 
-        return Task.CompletedTask;
+            var dealsForCurrency = _cache.GetOrAdd(tradeDeal.CurrencyPair, (k) => new());
+
+            dealsForCurrency.TryAdd(tradeDeal, default);
+
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error ocurred when entering a deal with ID='{Id}' for CurrencyPair={}", 
+                tradeDeal.Id, tradeDeal.CurrencyPair);
+
+            throw;
+        }
+        finally
+        {
+            rwLock.ExitWriteLock();
+        }
     }
 }
