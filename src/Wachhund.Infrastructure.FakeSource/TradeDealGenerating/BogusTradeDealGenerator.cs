@@ -39,6 +39,11 @@ public class BogusTradeDealGenerator : IFakeTradeDealGenerator
         return _tradeDealFaker.Generate(count);
     }
 
+    public IEnumerable<TradeDeal> GenerateForever()
+    {
+        return _tradeDealFaker.GenerateForever();
+    }
+
     private string GenerateRandomCurrencyPair()
     {
         string baseCurrency = GenerateRandomCurrency();
