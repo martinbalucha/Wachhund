@@ -23,29 +23,18 @@ public class FakeDataSource : IFakeDataSource
     public async IAsyncEnumerable<TradeDeal> FetchDataAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var random = new Random();
-        var stopwatch = new Stopwatch();
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            stopwatch.Restart();
-
-            int dealCount = random.Next(_configuration.MinDealsPerSecond, _configuration.MaxDealsPerSecond);
-
-            var fakeDeals = _generator.Generate(dealCount);
+            var fakeDeals = _generator.GenerateForever();
 
             foreach (var deal in fakeDeals)
             {
                 yield return deal;
-            }
 
-            stopwatch.Stop();
+                int pause = random.Next(_configuration.MinMillisecondsBetweenDeals, _configuration.MaxMillisecondsBetweenDeals);
 
-            long remainingMillisecondsToWait = MillisecondsOfWaiting - stopwatch.ElapsedMilliseconds;
-
-            if (remainingMillisecondsToWait > 0)
-            {
-                // If it is greater than 0, it is in range (0, 1000)
-                await Task.Delay((int)remainingMillisecondsToWait, cancellationToken);
+                await Task.Delay(pause, cancellationToken);
             }
         }
     }

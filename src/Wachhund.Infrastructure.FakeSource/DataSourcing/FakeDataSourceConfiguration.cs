@@ -2,6 +2,6 @@
 
 public record FakeDataSourceConfiguration
 {
-    public int MinDealsPerSecond { get; init; }
-    public int MaxDealsPerSecond { get; init; }
+    public int MinMillisecondsBetweenDeals { get; init; }
+    public int MaxMillisecondsBetweenDeals { get; init; }
 }
