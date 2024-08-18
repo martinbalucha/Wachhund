@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Wachhund.Contracts.TradeDetection;
-using Wachhund.Contracts.TradeDetection.Persistence;
 using Wachhund.Infrastructure.FakeSource.DataSourcing;
 
 namespace Wachhund.Infrastructure.FakeSource;
@@ -8,15 +7,15 @@ namespace Wachhund.Infrastructure.FakeSource;
 public class FakeMonitor : IMonitor
 {
     private readonly IFakeDataSource _fakeDataSource;
-    private readonly ITradeDealCache _cache;
+    private readonly ISuspiciousDealDetector _detector;
     private readonly ILogger<FakeMonitor> _logger;
 
     public FakeMonitor(IFakeDataSource fakeDataSource,
-        ITradeDealCache cache,
+        ISuspiciousDealDetector detector,
         ILogger<FakeMonitor> logger)
     {
         _fakeDataSource = fakeDataSource;
-        _cache = cache;
+        _detector = detector;
         _logger = logger;
     }
 
@@ -24,21 +23,14 @@ public class FakeMonitor : IMonitor
     {
         _logger.LogInformation("Starting monitoring process for fake data source.");
 
-        int cunter = 0;
-
         await foreach (var tradeDeal in _fakeDataSource.FetchDataAsync(cancellationToken))
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            await _cache.StoreAsync(tradeDeal);
+            var suspiciousDeals = await _detector.DetectAsync(tradeDeal);
             
-            if (cunter == 100)
+            if (suspiciousDeals.Count() > 0)
             {
-                var removalDate = DateTimeOffset.Now.AddSeconds(-1);
-                await _cache.CleanupCacheAsync(removalDate);
+                _logger.LogInformation("Suspicious deals fount for {DealId}", tradeDeal.Id);
             }
-
-            cunter++;
         }
     }
 }

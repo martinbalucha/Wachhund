@@ -27,6 +27,7 @@ public class SuspicousDealDetector : ISuspiciousDealDetector
             return Enumerable.Empty<TradeDeal>();
         }
 
+        // Need to store this ASAP so that it can be used for next incoming trade
         await _cache.StoreAsync(incomingDeal);
 
         var cutOffDate = incomingDeal.OccurredAt.AddMilliseconds(_config.OpenTimeDeltaMilliseconds);
