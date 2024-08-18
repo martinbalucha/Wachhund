@@ -18,6 +18,19 @@ public record TradeDeal
     public TradeActivity Activity { get; init; }
     public DateTimeOffset OccurredAt { get; init; }
 
+    public decimal VolumeToBalanceRatio
+    {
+        get
+        {
+            if (Balance == 0)
+            {
+                return 0;
+            }
+
+            return Lot / Balance;
+        }
+    }
+
     public TradeDeal()
     {
     }
