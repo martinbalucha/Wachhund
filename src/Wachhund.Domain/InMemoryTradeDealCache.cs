@@ -102,7 +102,7 @@ public class InMemoryTradeDealCache : ITradeDealCache
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error ocurred when entering a deal with ID='{Id}' for CurrencyPair={}", 
+            _logger.LogError(ex, "An error ocurred when entering a deal with ID='{Id}' for CurrencyPair={CurrencyPair}", 
                 tradeDeal.Id, tradeDeal.CurrencyPair);
 
             throw;
