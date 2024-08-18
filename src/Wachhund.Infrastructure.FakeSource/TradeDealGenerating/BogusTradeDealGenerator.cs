@@ -21,10 +21,17 @@ public class BogusTradeDealGenerator : IFakeTradeDealGenerator
         _fakeDataConfiguration = fakeDataConfiguration.Value;
 
         _tradeDealFaker.RuleFor(t => t.Id, f => Guid.NewGuid())
+            .RuleFor(t => t.SourceId, _fakeDataConfiguration.FakeDataSourceId)
             .RuleFor(t => t.Activity, f => f.PickRandom(new List<TradeActivity> { TradeActivity.Buy, TradeActivity.Sell }))
+            .RuleFor(t => t.OccurredAt, f => DateTimeOffset.Now)
             .RuleFor(t => t.CurrencyPair, f => GenerateRandomCurrencyPair())
             .RuleFor(t => t.Balance, f => f.Finance.Random.Decimal(MinimumAccountBalance, MaximumAccountBalance, 2))
             .RuleFor(t => t.Lot, f => f.Finance.Random.Decimal(0.1m, 100000m, 2));
+    }
+
+    public TradeDeal Generate()
+    {
+        return _tradeDealFaker.Generate();
     }
 
     public IEnumerable<TradeDeal> Generate(int count)
@@ -32,17 +39,22 @@ public class BogusTradeDealGenerator : IFakeTradeDealGenerator
         return _tradeDealFaker.Generate(count);
     }
 
+    public IEnumerable<TradeDeal> GenerateForever()
+    {
+        return _tradeDealFaker.GenerateForever();
+    }
+
     private string GenerateRandomCurrencyPair()
     {
-        string firstCurrency = GenerateRandomCurrency();
-        string secondCurrency = firstCurrency;
+        string baseCurrency = GenerateRandomCurrency();
+        string quoteCurrency = GenerateRandomCurrency();
 
-        while (firstCurrency == secondCurrency)
+        while (baseCurrency == quoteCurrency)
         {
-            secondCurrency = GenerateRandomCurrency();
+            quoteCurrency = GenerateRandomCurrency();
         }
 
-        return firstCurrency + secondCurrency;
+        return baseCurrency + quoteCurrency;
     }
 
     private string GenerateRandomCurrency()

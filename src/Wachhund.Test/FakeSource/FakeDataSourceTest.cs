@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using FluentAssertions;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Diagnostics;
 using Wachhund.Infrastructure.FakeSource.DataSourcing;
@@ -11,20 +12,10 @@ namespace Wachhund.Test.FakeSource;
 public class FakeDataSourceTest
 {
     private readonly IFakeTradeDealGenerator _generator;
-    private readonly FakeDataSourceConfiguration _configuration;
-    private readonly FakeDataSource _dataSource;
+    private FakeDataSource _dataSource;
 
     public FakeDataSourceTest()
     {
-        _configuration = new FakeDataSourceConfiguration()
-        {
-            MinDealsPerSecond = 10,
-            MaxDealsPerSecond = 100
-        };
-
-        var options = new Mock<IOptions<FakeDataSourceConfiguration>>();
-        options.SetupGet(c => c.Value).Returns(_configuration);
-
         var generatorConfiguration = new FakeDataSourceGeneratingConfiguration
         {
             AllowedCurrenciesIso4217 = ["EUR", "USD", "CHF"]
@@ -34,34 +25,44 @@ public class FakeDataSourceTest
         generatorOptions.SetupGet(o => o.Value).Returns(generatorConfiguration);
 
         _generator = new BogusTradeDealGenerator(generatorOptions.Object);
-
-        _dataSource = new FakeDataSource(_generator, options.Object);
     }
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(3)]
-    [InlineData(5)]
-    [InlineData(10)]
-    public async Task FetchDataAsync_IncomingData(int secondsToRun)
+    [InlineData(5, 10, 50)]
+    [InlineData(10, 100, 200)]
+    public async Task FetchDataAsync_IncomingData_NumberOfDealsInCorrectRange(int secondsToRun, int minPause, int maxPause)
     {
+        //TODO: rethink this one; it is failing for small delays
+
         // Arrange
         int dealsRecorded = 0;
 
         var cancellationTokenSource = new CancellationTokenSource();
         var stopwatch = new Stopwatch();
 
-        int minimumExpectedDeals = secondsToRun * _configuration.MinDealsPerSecond;
-        int maximumExpectedDeals = secondsToRun * _configuration.MaxDealsPerSecond;
+        var configuration = new FakeDataSourceConfiguration()
+        {
+            MinMillisecondsBetweenDeals = minPause,
+            MaxMillisecondsBetweenDeals = maxPause
+        };
 
-        // Act
+        var options = new Mock<IOptions<FakeDataSourceConfiguration>>();
+        options.SetupGet(c => c.Value).Returns(configuration);
+
+        _dataSource = new FakeDataSource(_generator, options.Object);
+
+        int lowerBrakedDealBound = (secondsToRun * 1000) / maxPause;
+        int upperBrakedDealBound = (secondsToRun * 1000) / minPause;
+
+        // Act    
+        var fakeDeals = _dataSource.FetchDataAsync(cancellationTokenSource.Token);
+
         stopwatch.Start();
 
-        await foreach (var deal in _dataSource.FetchDataAsync(cancellationTokenSource.Token))
+        await foreach (var deal in fakeDeals)
         {
-            if (stopwatch.ElapsedMilliseconds > secondsToRun * 1000)
+            if (stopwatch.ElapsedMilliseconds >= secondsToRun * 1000)
             {
-                stopwatch.Stop();
                 cancellationTokenSource.Cancel();
                 break;
             }
@@ -69,7 +70,10 @@ public class FakeDataSourceTest
             dealsRecorded++;
         }
 
+        stopwatch.Stop();
+
         // Assert
-        Assert.True(minimumExpectedDeals <= dealsRecorded && dealsRecorded <= maximumExpectedDeals);
+        dealsRecorded.Should().BeGreaterThanOrEqualTo(lowerBrakedDealBound)
+                     .And.BeLessThanOrEqualTo(upperBrakedDealBound);
     }
 }

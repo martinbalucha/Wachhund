@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Wachhund.Contracts\Wachhund.Contracts.csproj" />
+    <ProjectReference Include="..\Wachhund.Domain\Wachhund.Domain.csproj" />
     <ProjectReference Include="..\Wachhund.Infrastructure.FakeSource\Wachhund.Infrastructure.FakeSource.csproj" />
   </ItemGroup>
 
