@@ -30,11 +30,11 @@ public class FakeDataSource : IFakeDataSource
 
             foreach (var deal in fakeDeals)
             {
-                yield return deal;
-
                 int pause = random.Next(_configuration.MinMillisecondsBetweenDeals, _configuration.MaxMillisecondsBetweenDeals);
 
                 await Task.Delay(pause, cancellationToken);
+
+                yield return deal;
             }
         }
     }
