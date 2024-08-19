@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Wachhund.Domain\Wachhund.Domain.csproj" />
     <ProjectReference Include="..\Wachhund.Infrastructure.FakeSource\Wachhund.Infrastructure.FakeSource.csproj" />
   </ItemGroup>
 
