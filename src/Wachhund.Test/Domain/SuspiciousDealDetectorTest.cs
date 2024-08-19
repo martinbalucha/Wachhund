@@ -48,4 +48,43 @@ public class SuspiciousDealDetectorTest
         // Assert
         suspicousDeals.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task DetectAsync_ContainsExpiredDeals_NoSuspicousDealsFound()
+    {
+        // Arrange
+        var occurredAt = DateTimeOffset.Parse("2024-08-19T20:12:31");
+        var incomingDeal = new TradeDeal(Guid.NewGuid(), "Test", 10000, "CZKCHF", 10, TradeActivity.Buy, occurredAt);
+
+        var config = new SuspiciousDealDetectorConfiguration
+        {
+            OpenTimeDeltaMilliseconds = 1000,
+            SuspicousVolumeToBalanceRatio = 0.05m
+        };
+
+        _options.SetupGet(o => o.Value).Returns(config);
+
+        var expiredDeal1 = new TradeDeal
+        {
+            CurrencyPair = incomingDeal.CurrencyPair,
+            OccurredAt = occurredAt.AddMicroseconds(2 * config.OpenTimeDeltaMilliseconds),
+        };
+
+        var expiredDeal2 = new TradeDeal
+        {
+            CurrencyPair = incomingDeal.CurrencyPair,
+            OccurredAt = occurredAt.AddMicroseconds(config.OpenTimeDeltaMilliseconds + 1)
+        };
+
+        _cache.Setup(c => c.GetDealsLaterThenAsync(incomingDeal.CurrencyPair, occurredAt.AddMicroseconds(config.OpenTimeDeltaMilliseconds)))
+              .ReturnsAsync(new[] { expiredDeal1, expiredDeal2 });
+
+        var detector = new SuspicousDealDetector(_cache.Object, _options.Object, _logger.Object);
+
+        // Act
+        var suspicousDeals = await detector.DetectAsync(incomingDeal);
+
+        // Assert
+        suspicousDeals.Should().BeEmpty();
+    }
 }
