@@ -27,20 +27,28 @@ public class SuspicousDealDetector : ISuspiciousDealDetector
             return Enumerable.Empty<TradeDeal>();
         }
 
-        // Need to store this ASAP so that it can be used for next incoming trade
+        // Need to store this ASAP so that it can be used by next incoming trade
         await _cache.StoreAsync(incomingDeal);
 
         var cutOffDate = incomingDeal.OccurredAt.AddMilliseconds(_config.OpenTimeDeltaMilliseconds);
 
         var relevantDeals = await _cache.GetDealsLaterThenAsync(incomingDeal.CurrencyPair, cutOffDate);
 
-        return GetSuspicousDeals(incomingDeal, relevantDeals);
+        var suspiciousDeals = GetSuspicousDeals(incomingDeal, relevantDeals);
+
+        if (suspiciousDeals.Count > 0)
+        {
+            _logger.LogInformation("Suspicious deals found for {DealId}, {CurrencyPair}", incomingDeal.Id, incomingDeal.CurrencyPair);
+        }
+
+        return suspiciousDeals;
     }
 
-    private IEnumerable<TradeDeal> GetSuspicousDeals(TradeDeal incomingDeal, IEnumerable<TradeDeal> relevantDeals)
+    private List<TradeDeal> GetSuspicousDeals(TradeDeal incomingDeal, IEnumerable<TradeDeal> relevantDeals)
     {
         return relevantDeals.Where(d => d.Id != incomingDeal.Id &&
                                         Math.Abs(incomingDeal.VolumeToBalanceRatio - d.VolumeToBalanceRatio) 
-                                        <= _config.SuspicousVolumeToBalanceRatio);
+                                        <= _config.SuspicousVolumeToBalanceRatio)
+                            .ToList();
     }
 }

@@ -25,12 +25,7 @@ public class FakeMonitor : IMonitor
 
         await foreach (var tradeDeal in _fakeDataSource.FetchDataAsync(cancellationToken))
         {
-            var suspiciousDeals = await _detector.DetectAsync(tradeDeal);
-            
-            if (suspiciousDeals.Count() > 0)
-            {
-                _logger.LogInformation("Suspicious deals found for {DealId}, {CurrencyPair}", tradeDeal.Id, tradeDeal.CurrencyPair);
-            }
+            _ = _detector.DetectAsync(tradeDeal);         
         }
     }
 }
