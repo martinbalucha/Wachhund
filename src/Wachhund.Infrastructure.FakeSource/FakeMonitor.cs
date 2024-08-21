@@ -29,7 +29,7 @@ public class FakeMonitor : IMonitor
             
             if (suspiciousDeals.Count() > 0)
             {
-                _logger.LogInformation("Suspicious deals fount for {DealId}", tradeDeal.Id);
+                _logger.LogInformation("Suspicious deals found for {DealId}, {CurrencyPair}", tradeDeal.Id, tradeDeal.CurrencyPair);
             }
         }
     }

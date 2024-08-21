@@ -17,11 +17,4 @@ public interface ITradeDealCache
     /// <param name="latestDealsDate">A date after which trade deals were made</param>
     /// <returns>A collection of trade deals satisfying the criteria. Empty collection if none were found.</returns>
     Task<IEnumerable<TradeDeal>> GetDealsLaterThenAsync(string currencyPair, DateTimeOffset latestDealsDate);
-
-    /// <summary>
-    /// Removed all trade deals from the cache that were performed earlier than <paramref name="cutoffDate"/>
-    /// </summary>
-    /// <param name="cutoffDate">A date before which all trades will be deleted</param>
-    /// <returns></returns>
-    Task CleanupCacheAsync(DateTimeOffset cutoffDate);
 }
