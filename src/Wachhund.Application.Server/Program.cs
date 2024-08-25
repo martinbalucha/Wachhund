@@ -1,5 +1,6 @@
 using Serilog;
 using Wachhund.Application.Server.Services;
+using Wachhund.Contracts.TradeDetection;
 using Wachhund.Contracts.TradeDetection.Persistence;
 using Wachhund.Domain;
 using Wachhund.Infrastructure.FakeSource;
@@ -24,6 +25,12 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddSerilog(ctx => ctx.ReadFrom.Configuration(builder.Configuration));
+
+        // Domain
+        builder.Services.Configure<SuspiciousDealDetectorConfiguration>(builder.Configuration
+            .GetRequiredSection(nameof(SuspiciousDealDetectorConfiguration)));
+
+        builder.Services.AddSingleton<ISuspiciousDealDetector, SuspicousDealDetector>();
 
         // Fake source
         builder.Services.Configure<FakeDataSourceConfiguration>(builder.Configuration

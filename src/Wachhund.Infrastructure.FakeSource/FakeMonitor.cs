@@ -8,15 +8,15 @@ namespace Wachhund.Infrastructure.FakeSource;
 public class FakeMonitor : IMonitor
 {
     private readonly IFakeDataSource _fakeDataSource;
-    private readonly ITradeDealCache _cache;
+    private readonly ISuspiciousDealDetector _detector;
     private readonly ILogger<FakeMonitor> _logger;
 
     public FakeMonitor(IFakeDataSource fakeDataSource,
-        ITradeDealCache cache,
+        ISuspiciousDealDetector detector,
         ILogger<FakeMonitor> logger)
     {
         _fakeDataSource = fakeDataSource;
-        _cache = cache;
+        _detector = detector;
         _logger = logger;
     }
 
@@ -28,17 +28,7 @@ public class FakeMonitor : IMonitor
 
         await foreach (var tradeDeal in _fakeDataSource.FetchDataAsync(cancellationToken))
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            await _cache.StoreAsync(tradeDeal);
-            
-            if (cunter == 100)
-            {
-                var removalDate = DateTimeOffset.Now.AddSeconds(-1);
-                await _cache.CleanupCacheAsync(removalDate);
-            }
-
-            cunter++;
+            _ = _detector.DetectAsync(tradeDeal);         
         }
     }
 }

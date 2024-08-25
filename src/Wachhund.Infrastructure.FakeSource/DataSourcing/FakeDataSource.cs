@@ -8,8 +8,6 @@ namespace Wachhund.Infrastructure.FakeSource.DataSourcing;
 
 public class FakeDataSource : IFakeDataSource
 {
-    private const int MillisecondsOfWaiting = 1000;
-
     private readonly IFakeTradeDealGenerator _generator;
     private readonly FakeDataSourceConfiguration _configuration;
 
