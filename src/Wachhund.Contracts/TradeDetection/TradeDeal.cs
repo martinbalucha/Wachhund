@@ -51,6 +51,11 @@ public record TradeDeal
         this.OccurredAt = OccurredAt;
     }
 
+    public bool IsSuspicious(TradeDeal comparedDeal, decimal suspicousVolumeToBalanceRatio)
+    {
+        return Math.Abs(VolumeToBalanceRatio - comparedDeal.VolumeToBalanceRatio) <= suspicousVolumeToBalanceRatio)
+    }
+
     public override string ToString()
     {
         return $"{Id}-{SourceId}: Balance {Balance}, {Activity} {CurrencyPair}, {Lot} lot at {OccurredAt.ToString("O")}";

@@ -46,9 +46,7 @@ public class SuspicousDealDetector : ISuspiciousDealDetector
 
     private List<TradeDeal> GetSuspicousDeals(TradeDeal incomingDeal, IEnumerable<TradeDeal> relevantDeals)
     {
-        return relevantDeals.Where(d => d.Id != incomingDeal.Id &&
-                                        Math.Abs(incomingDeal.VolumeToBalanceRatio - d.VolumeToBalanceRatio) 
-                                        <= _config.SuspicousVolumeToBalanceRatio)
+        return relevantDeals.Where(d => d.Id != incomingDeal.Id && incomingDeal.IsSuspicious(d, _config.SuspicousVolumeToBalanceRatio))                                        
                             .ToList();
     }
 }
