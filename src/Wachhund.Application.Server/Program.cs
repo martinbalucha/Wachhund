@@ -41,20 +41,14 @@ public class Program
 
         builder.Services.AddSingleton<IFakeDataSource, FakeDataSource>();
         builder.Services.AddSingleton<IFakeTradeDealGenerator, BogusTradeDealGenerator>();
-        builder.Services.AddSingleton<FakeMonitor>();
 
         // Persistence
         builder.Services.AddSingleton<ITradeDealCache, InMemoryTradeDealCache>();
 
-        // Monitoring process
-        builder.Services.AddHostedService<MonitoringService>(services =>
-        {
-            var monitors = services.GetRequiredService<FakeMonitor>();
+        // Monitoring
+        builder.Services.AddSingleton<IMonitor, FakeMonitor>();
 
-            var logger = services.GetRequiredService<ILogger<MonitoringService>>();
-
-            return new MonitoringService(new[] { monitors }, logger);
-        });
+        builder.Services.AddHostedService<MonitoringService>();
 
         var app = builder.Build();
 
