@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Wachhund.Contracts.TradeDetection;
+using Wachhund.Contracts.TradeDetection.Persistence;
 using Wachhund.Infrastructure.FakeSource.DataSourcing;
 
 namespace Wachhund.Infrastructure.FakeSource;
@@ -22,6 +23,8 @@ public class FakeMonitor : IMonitor
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Starting monitoring process for fake data source.");
+
+        int cunter = 0;
 
         await foreach (var tradeDeal in _fakeDataSource.FetchDataAsync(cancellationToken))
         {
