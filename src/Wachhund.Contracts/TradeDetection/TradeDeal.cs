@@ -53,7 +53,7 @@ public record TradeDeal
 
     public bool IsSuspicious(TradeDeal comparedDeal, decimal suspicousVolumeToBalanceRatio)
     {
-        return Math.Abs(VolumeToBalanceRatio - comparedDeal.VolumeToBalanceRatio) <= suspicousVolumeToBalanceRatio)
+        return Math.Abs(VolumeToBalanceRatio - comparedDeal.VolumeToBalanceRatio) <= suspicousVolumeToBalanceRatio;
     }
 
     public override string ToString()
