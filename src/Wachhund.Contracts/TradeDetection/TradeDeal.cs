@@ -11,9 +11,9 @@
 public record TradeDeal
 {
     public Guid Id { get; init; }
-    public string SourceId { get; init; }
+    public string SourceId { get; init; } = string.Empty;
     public decimal Balance { get; init; }
-    public string CurrencyPair { get; init; }
+    public string CurrencyPair { get; init; } = string.Empty;
     public decimal Lot {  get; init; }
     public TradeActivity Activity { get; init; }
     public DateTimeOffset OccurredAt { get; init; }
@@ -53,7 +53,8 @@ public record TradeDeal
 
     public bool IsSuspicious(TradeDeal comparedDeal, decimal suspicousVolumeToBalanceRatio)
     {
-        return Math.Abs(VolumeToBalanceRatio - comparedDeal.VolumeToBalanceRatio) <= suspicousVolumeToBalanceRatio;
+        return CurrencyPair.Equals(comparedDeal.CurrencyPair, StringComparison.OrdinalIgnoreCase) &&
+            Math.Abs(VolumeToBalanceRatio - comparedDeal.VolumeToBalanceRatio) <= suspicousVolumeToBalanceRatio;
     }
 
     public override string ToString()
