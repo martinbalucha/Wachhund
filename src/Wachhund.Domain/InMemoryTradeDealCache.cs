@@ -27,9 +27,9 @@ public class InMemoryTradeDealCache : ITradeDealCache
         _config = config.Value;
 
         _ = CleanupPeriodicallyAsync();
-                        }
+    }
 
-    public Task<IEnumerable<TradeDeal>> GetDealsLaterThenAsync(string currencyPair, DateTimeOffset latestDealsDate)
+    public Task<IEnumerable<TradeDeal>> GetDealsEarlierThenAsync(string currencyPair, DateTimeOffset latestDealsDate)
     {
         var rwLock = _rwLocks.GetOrAdd(currencyPair, k => new ReaderWriterLockSlim());
 

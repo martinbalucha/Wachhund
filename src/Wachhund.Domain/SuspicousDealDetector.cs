@@ -32,7 +32,7 @@ public class SuspicousDealDetector : ISuspiciousDealDetector
 
         var cutOffDate = incomingDeal.OccurredAt.AddMilliseconds(_config.OpenTimeDeltaMilliseconds);
 
-        var relevantDeals = await _cache.GetDealsLaterThenAsync(incomingDeal.CurrencyPair, cutOffDate);
+        var relevantDeals = await _cache.GetDealsEarlierThenAsync(incomingDeal.CurrencyPair, cutOffDate);
 
         var suspiciousDeals = GetSuspicousDeals(incomingDeal, relevantDeals);
 

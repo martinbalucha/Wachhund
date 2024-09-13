@@ -16,5 +16,5 @@ public interface ITradeDealCache
     /// <param name="currencyPair">A pair of currencies for which trade deals were done</param>
     /// <param name="latestDealsDate">A date after which trade deals were made</param>
     /// <returns>A collection of trade deals satisfying the criteria. Empty collection if none were found.</returns>
-    Task<IEnumerable<TradeDeal>> GetDealsLaterThenAsync(string currencyPair, DateTimeOffset latestDealsDate);
+    Task<IEnumerable<TradeDeal>> GetDealsEarlierThenAsync(string currencyPair, DateTimeOffset latestDealsDate);
 }

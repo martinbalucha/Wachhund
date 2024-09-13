@@ -37,7 +37,7 @@ public class SuspiciousDealDetectorTest
 
         _options.SetupGet(o => o.Value).Returns(config);
 
-        _cache.Setup(c => c.GetDealsLaterThenAsync(incomingDeal.CurrencyPair, occurredAt.AddMicroseconds(config.OpenTimeDeltaMilliseconds)))
+        _cache.Setup(c => c.GetDealsEarlierThenAsync(incomingDeal.CurrencyPair, occurredAt.AddMicroseconds(config.OpenTimeDeltaMilliseconds)))
               .ReturnsAsync(new[] { incomingDeal });
 
         var detector = new SuspicousDealDetector(_cache.Object, _options.Object, _logger.Object);
@@ -76,7 +76,7 @@ public class SuspiciousDealDetectorTest
             OccurredAt = occurredAt.AddMicroseconds(config.OpenTimeDeltaMilliseconds + 1)
         };
 
-        _cache.Setup(c => c.GetDealsLaterThenAsync(incomingDeal.CurrencyPair, occurredAt.AddMicroseconds(config.OpenTimeDeltaMilliseconds)))
+        _cache.Setup(c => c.GetDealsEarlierThenAsync(incomingDeal.CurrencyPair, occurredAt.AddMicroseconds(config.OpenTimeDeltaMilliseconds)))
               .ReturnsAsync(new[] { expiredDeal1, expiredDeal2 });
 
         var detector = new SuspicousDealDetector(_cache.Object, _options.Object, _logger.Object);
