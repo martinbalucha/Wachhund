@@ -97,4 +97,34 @@ public class InMemoryTradeDealCacheTest
         var usdChfDeals = await cache.GetDealsEarlierThenAsync(tradeDeal3.CurrencyPair, DateTimeOffset.UtcNow);
         usdChfDeals.Should().HaveCount(1).And.Contain(tradeDeal3);
     }
+
+    [Fact]
+    public async Task GetDealsEarlierThenAsync_NoDealMatchingCriteria_EmptyCollectionReturned()
+    {
+        // Arrange
+        var configuration = new SuspiciousDealDetectorConfiguration
+        {
+            OpenTimeDeltaMilliseconds = 2000
+        };
+
+        var tradeDeal = new TradeDeal()
+        {
+            Id = Guid.NewGuid(),
+            Activity = TradeActivity.Buy,
+            CurrencyPair = "CZKEUR",
+            OccurredAt = DateTime.UtcNow.AddMilliseconds(-50),
+        };
+
+        _options.SetupGet(o => o.Value).Returns(configuration);
+
+        var cache = new InMemoryTradeDealCache(_logger.Object, _options.Object);
+        await cache.StoreAsync(tradeDeal);
+
+        // Act
+        var storedDeals = await cache.GetDealsEarlierThenAsync(tradeDeal.CurrencyPair, DateTimeOffset.UtcNow.AddMilliseconds(-100));
+
+        // Assert
+
+        storedDeals.Should().BeEmpty();
+    }
 }
