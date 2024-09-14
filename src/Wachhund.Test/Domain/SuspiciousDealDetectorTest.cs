@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Contracts.TradeDetection.Persistence;
-using Wachhund.Domain;
+using Wachhund.Domain.Detection;
 using Xunit;
 
 namespace Wachhund.Test.Domain;
