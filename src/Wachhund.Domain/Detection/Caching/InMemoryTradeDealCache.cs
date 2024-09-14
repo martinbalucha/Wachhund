@@ -8,11 +8,8 @@ namespace Wachhund.Domain.Detection.Caching;
 
 public class InMemoryTradeDealCache : ITradeDealCache
 {
-    private const int CacheCleanupRateMilliseconds = 5000;
-    private const int CutOffTimeBufferMilliseconds = 100;
-
     private readonly ILogger<InMemoryTradeDealCache> _logger;
-    private readonly SuspiciousDealDetectorConfiguration _config;
+    private readonly InMemoryCacheConfiguration _config;
 
     /// <summary>
     /// An in-memory cache which separates the deals into "buckets" by the currency pair.
@@ -21,7 +18,7 @@ public class InMemoryTradeDealCache : ITradeDealCache
     private readonly ConcurrentDictionary<string, ReaderWriterLockSlim> _rwLocks = new();
 
     public InMemoryTradeDealCache(ILogger<InMemoryTradeDealCache> logger,
-        IOptions<SuspiciousDealDetectorConfiguration> config)
+        IOptions<InMemoryCacheConfiguration> config)
     {
         _logger = logger;
         _config = config.Value;
@@ -80,14 +77,13 @@ public class InMemoryTradeDealCache : ITradeDealCache
 
     private async Task CleanupPeriodicallyAsync()
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(CacheCleanupRateMilliseconds));
+        using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(_config.CleanupIntervalInMilliseconds));
 
         try
         {
             while (await timer.WaitForNextTickAsync())
             {
-                // Let's be extra forgiving here
-                DateTimeOffset cutOffDate = DateTimeOffset.Now.AddMilliseconds(_config.OpenTimeDeltaMilliseconds - CutOffTimeBufferMilliseconds);
+                DateTimeOffset cutOffDate = DateTimeOffset.UtcNow.AddMilliseconds(_config.CleanupIntervalInMilliseconds);
 
                 CleanupCache(cutOffDate);
             }
