@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Domain;
+using Wachhund.Domain.Detection.Caching;
 using Xunit;
 
 namespace Wachhund.Test.Domain;
@@ -122,6 +123,38 @@ public class InMemoryTradeDealCacheTest
 
         // Act
         var storedDeals = await cache.GetDealsEarlierThenAsync(tradeDeal.CurrencyPair, DateTimeOffset.UtcNow.AddMilliseconds(-100));
+
+        // Assert
+
+        storedDeals.Should().BeEmpty();
+    }
+
+    //[Fact]
+    public async Task GetDealsEarlierThenAsync_WaitsForCleanup_EmptyCollectionReturned()
+    {
+        // Arrange
+        var configuration = new SuspiciousDealDetectorConfiguration
+        {
+            OpenTimeDeltaMilliseconds = 2000
+        };
+
+        var tradeDeal = new TradeDeal()
+        {
+            Id = Guid.NewGuid(),
+            Activity = TradeActivity.Buy,
+            CurrencyPair = "CZKEUR",
+            OccurredAt = DateTime.UtcNow.AddMilliseconds(-50),
+        };
+
+        _options.SetupGet(o => o.Value).Returns(configuration);
+
+        var cache = new InMemoryTradeDealCache(_logger.Object, _options.Object);
+        await cache.StoreAsync(tradeDeal);
+
+        // Act
+        await Task.Delay(configuration.OpenTimeDeltaMilliseconds + 800);
+
+        var storedDeals = await cache.GetDealsEarlierThenAsync(tradeDeal.CurrencyPair, DateTimeOffset.UtcNow);
 
         // Assert
 

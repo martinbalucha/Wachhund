@@ -3,6 +3,7 @@ using Wachhund.Application.Server.Services;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Contracts.TradeDetection.Persistence;
 using Wachhund.Domain;
+using Wachhund.Domain.Detection.Caching;
 using Wachhund.Infrastructure.FakeSource;
 using Wachhund.Infrastructure.FakeSource.DataSourcing;
 using Wachhund.Infrastructure.FakeSource.TradeDealGenerating;

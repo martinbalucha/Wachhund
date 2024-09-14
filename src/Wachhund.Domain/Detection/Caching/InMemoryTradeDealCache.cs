@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Contracts.TradeDetection.Persistence;
 
-namespace Wachhund.Domain;
+namespace Wachhund.Domain.Detection.Caching;
 
 public class InMemoryTradeDealCache : ITradeDealCache
 {
@@ -45,10 +45,10 @@ public class InMemoryTradeDealCache : ITradeDealCache
             return Task.FromResult(soughtDeals.Select(kv => kv.Key)
                                               .Where(d => d.OccurredAt <= latestDealsDate));
         }
-        finally 
-        { 
+        finally
+        {
             rwLock.ExitReadLock();
-        }     
+        }
     }
 
     public Task StoreAsync(TradeDeal tradeDeal)
@@ -67,7 +67,7 @@ public class InMemoryTradeDealCache : ITradeDealCache
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error ocurred when entering a deal with ID='{Id}' for CurrencyPair={CurrencyPair}", 
+            _logger.LogError(ex, "An error ocurred when entering a deal with ID='{Id}' for CurrencyPair={CurrencyPair}",
                 tradeDeal.Id, tradeDeal.CurrencyPair);
 
             throw;
@@ -88,13 +88,13 @@ public class InMemoryTradeDealCache : ITradeDealCache
             {
                 // Let's be extra forgiving here
                 DateTimeOffset cutOffDate = DateTimeOffset.Now.AddMilliseconds(_config.OpenTimeDeltaMilliseconds - CutOffTimeBufferMilliseconds);
-                
+
                 CleanupCache(cutOffDate);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("Coskaj strasne nedobre");
+            _logger.LogError(ex, "An error occurred during the cache cleanup.");
         }
     }
 
