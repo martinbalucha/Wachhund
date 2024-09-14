@@ -2,7 +2,8 @@ using Serilog;
 using Wachhund.Application.Server.Services;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Contracts.TradeDetection.Persistence;
-using Wachhund.Domain;
+using Wachhund.Domain.Detection;
+using Wachhund.Domain.Detection.Caching;
 using Wachhund.Infrastructure.FakeSource;
 using Wachhund.Infrastructure.FakeSource.DataSourcing;
 using Wachhund.Infrastructure.FakeSource.TradeDealGenerating;
@@ -30,6 +31,9 @@ public class Program
         builder.Services.Configure<SuspiciousDealDetectorConfiguration>(builder.Configuration
             .GetRequiredSection(nameof(SuspiciousDealDetectorConfiguration)));
 
+        builder.Services.Configure<InMemoryCacheConfiguration>(builder.Configuration
+            .GetRequiredSection(nameof(InMemoryCacheConfiguration)));         
+
         builder.Services.AddSingleton<ISuspiciousDealDetector, SuspicousDealDetector>();
 
         // Fake source
@@ -41,20 +45,14 @@ public class Program
 
         builder.Services.AddSingleton<IFakeDataSource, FakeDataSource>();
         builder.Services.AddSingleton<IFakeTradeDealGenerator, BogusTradeDealGenerator>();
-        builder.Services.AddSingleton<FakeMonitor>();
 
         // Persistence
         builder.Services.AddSingleton<ITradeDealCache, InMemoryTradeDealCache>();
 
-        // Monitoring process
-        builder.Services.AddHostedService<MonitoringService>(services =>
-        {
-            var monitors = services.GetRequiredService<FakeMonitor>();
+        // Monitoring
+        builder.Services.AddSingleton<IMonitor, FakeMonitor>();
 
-            var logger = services.GetRequiredService<ILogger<MonitoringService>>();
-
-            return new MonitoringService(new[] { monitors }, logger);
-        });
+        builder.Services.AddHostedService<MonitoringService>();
 
         var app = builder.Build();
 

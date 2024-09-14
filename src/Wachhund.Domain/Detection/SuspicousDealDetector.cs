@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Contracts.TradeDetection.Persistence;
 
-namespace Wachhund.Domain;
+namespace Wachhund.Domain.Detection;
 
 public class SuspicousDealDetector : ISuspiciousDealDetector
 {
@@ -11,7 +11,7 @@ public class SuspicousDealDetector : ISuspiciousDealDetector
     private readonly SuspiciousDealDetectorConfiguration _config;
     private readonly ILogger<SuspicousDealDetector> _logger;
 
-    public SuspicousDealDetector(ITradeDealCache cache, 
+    public SuspicousDealDetector(ITradeDealCache cache,
         IOptions<SuspiciousDealDetectorConfiguration> config,
         ILogger<SuspicousDealDetector> logger)
     {
@@ -32,7 +32,7 @@ public class SuspicousDealDetector : ISuspiciousDealDetector
 
         var cutOffDate = incomingDeal.OccurredAt.AddMilliseconds(_config.OpenTimeDeltaMilliseconds);
 
-        var relevantDeals = await _cache.GetDealsLaterThenAsync(incomingDeal.CurrencyPair, cutOffDate);
+        var relevantDeals = await _cache.GetDealsEarlierThenAsync(incomingDeal.CurrencyPair, cutOffDate);
 
         var suspiciousDeals = GetSuspicousDeals(incomingDeal, relevantDeals);
 
@@ -46,7 +46,7 @@ public class SuspicousDealDetector : ISuspiciousDealDetector
 
     private List<TradeDeal> GetSuspicousDeals(TradeDeal incomingDeal, IEnumerable<TradeDeal> relevantDeals)
     {
-        return relevantDeals.Where(d => d.Id != incomingDeal.Id && incomingDeal.IsSuspicious(d, _config.SuspicousVolumeToBalanceRatio))                                        
+        return relevantDeals.Where(d => d.Id != incomingDeal.Id && incomingDeal.IsSuspicious(d, _config.SuspicousVolumeToBalanceRatio))
                             .ToList();
     }
 }

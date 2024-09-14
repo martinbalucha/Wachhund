@@ -4,15 +4,12 @@ using System.Collections.Concurrent;
 using Wachhund.Contracts.TradeDetection;
 using Wachhund.Contracts.TradeDetection.Persistence;
 
-namespace Wachhund.Domain;
+namespace Wachhund.Domain.Detection.Caching;
 
 public class InMemoryTradeDealCache : ITradeDealCache
 {
-    private const int CacheCleanupRateMilliseconds = 5000;
-    private const int CutOffTimeBufferMilliseconds = 100;
-
     private readonly ILogger<InMemoryTradeDealCache> _logger;
-    private readonly SuspiciousDealDetectorConfiguration _config;
+    private readonly InMemoryCacheConfiguration _config;
 
     /// <summary>
     /// An in-memory cache which separates the deals into "buckets" by the currency pair.
@@ -21,15 +18,15 @@ public class InMemoryTradeDealCache : ITradeDealCache
     private readonly ConcurrentDictionary<string, ReaderWriterLockSlim> _rwLocks = new();
 
     public InMemoryTradeDealCache(ILogger<InMemoryTradeDealCache> logger,
-        IOptions<SuspiciousDealDetectorConfiguration> config)
+        IOptions<InMemoryCacheConfiguration> config)
     {
         _logger = logger;
         _config = config.Value;
 
         _ = CleanupPeriodicallyAsync();
-                        }
+    }
 
-    public Task<IEnumerable<TradeDeal>> GetDealsLaterThenAsync(string currencyPair, DateTimeOffset latestDealsDate)
+    public Task<IEnumerable<TradeDeal>> GetDealsEarlierThenAsync(string currencyPair, DateTimeOffset latestDealsDate)
     {
         var rwLock = _rwLocks.GetOrAdd(currencyPair, k => new ReaderWriterLockSlim());
 
@@ -45,10 +42,10 @@ public class InMemoryTradeDealCache : ITradeDealCache
             return Task.FromResult(soughtDeals.Select(kv => kv.Key)
                                               .Where(d => d.OccurredAt <= latestDealsDate));
         }
-        finally 
-        { 
+        finally
+        {
             rwLock.ExitReadLock();
-        }     
+        }
     }
 
     public Task StoreAsync(TradeDeal tradeDeal)
@@ -67,7 +64,7 @@ public class InMemoryTradeDealCache : ITradeDealCache
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error ocurred when entering a deal with ID='{Id}' for CurrencyPair={CurrencyPair}", 
+            _logger.LogError(ex, "An error ocurred when entering a deal with ID='{Id}' for CurrencyPair={CurrencyPair}",
                 tradeDeal.Id, tradeDeal.CurrencyPair);
 
             throw;
@@ -80,21 +77,20 @@ public class InMemoryTradeDealCache : ITradeDealCache
 
     private async Task CleanupPeriodicallyAsync()
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(CacheCleanupRateMilliseconds));
+        using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(_config.CleanupIntervalInMilliseconds));
 
         try
         {
             while (await timer.WaitForNextTickAsync())
             {
-                // Let's be extra forgiving here
-                DateTimeOffset cutOffDate = DateTimeOffset.Now.AddMilliseconds(_config.OpenTimeDeltaMilliseconds - CutOffTimeBufferMilliseconds);
-                
+                DateTimeOffset cutOffDate = DateTimeOffset.UtcNow.AddMilliseconds(_config.CleanupIntervalInMilliseconds);
+
                 CleanupCache(cutOffDate);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("Coskaj strasne nedobre");
+            _logger.LogError(ex, "An error occurred during the cache cleanup.");
         }
     }
 

@@ -1,4 +1,4 @@
-﻿namespace Wachhund.Domain;
+﻿namespace Wachhund.Domain.Detection;
 
 public record SuspiciousDealDetectorConfiguration
 {
