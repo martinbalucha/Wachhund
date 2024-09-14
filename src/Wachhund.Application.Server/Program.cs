@@ -31,6 +31,9 @@ public class Program
         builder.Services.Configure<SuspiciousDealDetectorConfiguration>(builder.Configuration
             .GetRequiredSection(nameof(SuspiciousDealDetectorConfiguration)));
 
+        builder.Services.Configure<InMemoryCacheConfiguration>(builder.Configuration
+            .GetRequiredSection(nameof(InMemoryCacheConfiguration)));         
+
         builder.Services.AddSingleton<ISuspiciousDealDetector, SuspicousDealDetector>();
 
         // Fake source
